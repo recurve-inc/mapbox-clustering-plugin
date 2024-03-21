@@ -17,7 +17,7 @@ export default function App() {
   const mapRef = useRef();
 
   const url =
-    "https://data.police.uk/api/crimes-street/all-crime?lat=52.629729&lng=-1.131592&date=2019-10";
+    "https://data.police.uk/api/crimes-street/all-crime?lat=52.629729&lng=-1.131592&date=2023-10";
   const { data, error } = useSwr(url, { fetcher });
   const crimes = data && !error ? data.slice(0, 2000) : [];
   const points = crimes.map(crime => ({
@@ -51,7 +51,7 @@ export default function App() {
     <div>
       <ReactMapGL
         {...viewport}
-        maxZoom={20}
+        maxZoom={100}
         mapboxApiAccessToken={process.env.REACT_APP_MAPBOX_TOKEN}
         onViewportChange={newViewport => {
           setViewport({ ...newViewport });
