@@ -44,14 +44,14 @@ export default function App() {
     points,
     bounds,
     zoom: viewport.zoom,
-    options: { radius: 75, maxZoom: 20 }
+    options: { radius: 75, maxZoom: 17 }
   });
 
   return (
     <div>
       <ReactMapGL
         {...viewport}
-        maxZoom={100}
+        maxZoom={50}
         mapboxApiAccessToken={process.env.REACT_APP_MAPBOX_TOKEN}
         onViewportChange={newViewport => {
           setViewport({ ...newViewport });
@@ -81,7 +81,7 @@ export default function App() {
                   onClick={() => {
                     const expansionZoom = Math.min(
                       supercluster.getClusterExpansionZoom(cluster.id),
-                      20
+                      50
                     );
 
                     setViewport({
@@ -107,10 +107,15 @@ export default function App() {
               key={`crime-${cluster.properties.crimeId}`}
               latitude={latitude}
               longitude={longitude}
+              color='gray'
             >
-              <button className="crime-marker">
-                <img src="/custody.svg" alt="crime doesn't pay" />
-              </button>
+             <div
+                  className="crime-marker"
+              ></div>
+              {//<button className="crime-marker">
+                //<img src="/custody.svg" alt="crime doesn't pay" />
+              //</button>
+            }
             </Marker>
           );
         })}
