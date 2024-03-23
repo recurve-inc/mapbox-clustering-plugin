@@ -50,13 +50,13 @@ export default function App() {
   const sites = data ? data.slice(0, 2000) : [];
   const points = sites.map(site => ({
     type: "Feature",
-    properties: { cluster: false},
+    properties: { cluster: false, subpop: site.subpop},
     geometry: {
       type: "Point",
       coordinates: [
         site.longitude,
         site.latitude
-      ]
+      ],
     }
   }));
 
@@ -88,6 +88,7 @@ export default function App() {
       >
         {clusters.map(cluster => {
           const [longitude, latitude] = cluster.geometry.coordinates;
+          const subpop = cluster.properties.subpop
           const {
             cluster: isCluster,
             point_count: pointCount
@@ -99,6 +100,7 @@ export default function App() {
                 key={`cluster-${cluster.id}`}
                 latitude={latitude}
                 longitude={longitude}
+                subpop={subpop}
               >
                 <div
                   className="cluster-marker"
@@ -132,13 +134,13 @@ export default function App() {
 
           return (
             <Marker
-              key={`crime-${cluster.properties.crimeId}`}
               latitude={latitude}
               longitude={longitude}
-              color='gray'
+              subpop={subpop}
+              color={this.subpop ? 'green' : 'gray'}
             >
              <div
-                  className="crime-marker"
+                  className="site-marker"
               ></div>
               {//<button className="crime-marker">
                 //<img src="/custody.svg" alt="crime doesn't pay" />
