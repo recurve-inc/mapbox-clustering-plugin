@@ -93,11 +93,11 @@ export default function App() {
         maxZoom: 14, 
     map: props => ({
         subpop: props.subpop
-    }),
-    //reduce: (acc,props) => {
-    //    target_count: props.subpop.reduce(function(a,b){return b?a++:a})
-   // }
-}
+        }),
+    reduce: (acc,props) => {
+        acc.target_count += props.subpop ? 1 : 0;   
+        }
+    }
   });
 
   return (
@@ -120,7 +120,7 @@ export default function App() {
             //target_count: targetCount
           } = cluster.properties;
           const diameter = Math.sqrt(pointCount) / Math.sqrt(points.length)
-          //const diameter2 = Math.sqrt(targetCount) / Math.sqrt(pointCount) * diameter
+          const diameter2 = Math.sqrt(targetCount) / Math.sqrt(pointCount) * diameter
 
           if (isCluster) {
             return (
@@ -155,6 +155,7 @@ export default function App() {
                 >
                     {pointCount}    
                 </div>
+                
              </Marker>
 
             );
