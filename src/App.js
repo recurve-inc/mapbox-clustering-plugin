@@ -5,7 +5,7 @@ import useSupercluster from "use-supercluster";
 import {
     client,
     useConfig,
-    useElementColumns,
+    //useElementColumns,
     useElementData,
   } from "@sigmacomputing/plugin";
 import "./App.css";
@@ -64,9 +64,6 @@ export default function App() {
   });
   const mapRef = useRef();
 
-  //const url =
-  //  "https://data.police.uk/api/crimes-street/all-crime?lat=52.629729&lng=-1.131592&date=2023-10";
-  //const { data, error } = useSwr(url, { fetcher });
   const sites = data ? data : [];
 
   const points = sites.map(site => ({
@@ -91,14 +88,14 @@ export default function App() {
     points,
     bounds,
     zoom: viewport.zoom,
-    options: { radius: 75, maxZoom: 15 }
+    options: { radius: 75, maxZoom: 14 }
   });
 
   return (
     <div>
       <ReactMapGL
         {...viewport}
-        maxZoom={50}
+        maxZoom={18}
         mapboxApiAccessToken={process.env.REACT_APP_MAPBOX_TOKEN}
         onViewportChange={newViewport => {
           setViewport({ ...newViewport });
@@ -107,7 +104,7 @@ export default function App() {
       >
         {clusters.map(cluster => {
           const [longitude, latitude] = cluster.geometry.coordinates;
-          const subpop = cluster.properties.subpop
+          const subpop = cluster.subpop
           const {
             cluster: isCluster,
             point_count: pointCount
@@ -119,13 +116,12 @@ export default function App() {
                 key={`cluster-${cluster.id}`}
                 latitude={latitude}
                 longitude={longitude}
-                subpop={subpop}
               >
                 <div
                   className="cluster-marker"
                   style={{
-                    width: `${10 + (pointCount / points.length) * 20}px`,
-                    height: `${10 + (pointCount / points.length) * 20}px`
+                    width: `${20 + Math.sqrt(pointCount) / Math.sqrt(points.length) * 100}px`,
+                    height: `${20 + Math.sqrt(pointCount) / Math.sqrt(points.length) * 100}px`
                   }}
                   onClick={() => {
                     const expansionZoom = Math.min(
@@ -153,20 +149,26 @@ export default function App() {
 
           return (
             <Marker
-              latitude={latitude}
-              longitude={longitude}
-              subpop={subpop}
-              color='gray'//{subpop ? 'green' : 'gray'}
+            //add some random jitter so colocated meters can be distinguished
+            //not great, because it regenerates the number on each render, so
+            //the points move around. 
+            //TBD: use a different random number generator that can be 
+            //given a seed.
+              latitude={latitude + (Math.random()-0.5)*0.00005}
+              longitude={longitude + (Math.random()-0.5)*0.00005}
             >
              <div
-                  className="site-marker"
-                  style={{width:`10px`, height:`10px`}}
-                  color='gray'
-              ></div>
+                className={subpop ? "target-site-marker" : "site-marker"}
+                style={{
+                  width:`${7}px`, 
+                  height:`${7}px`
+                }}
+              >
               {//<button className="crime-marker">
                 //<img src="/custody.svg" alt="crime doesn't pay" />
               //</button>
             }
+            </div>
             </Marker>
           );
         })}
