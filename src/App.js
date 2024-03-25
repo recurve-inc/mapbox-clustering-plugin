@@ -88,7 +88,16 @@ export default function App() {
     points,
     bounds,
     zoom: viewport.zoom,
-    options: { radius: 75, maxZoom: 14 }
+    options: { 
+        radius: 75, 
+        maxZoom: 14, 
+    map: props => ({
+        subpop: props.subpop
+    }),
+    //reduce: (acc,props) => {
+    //    target_count: props.subpop.reduce(function(a,b){return b?a++:a})
+   // }
+}
   });
 
   return (
@@ -104,11 +113,14 @@ export default function App() {
       >
         {clusters.map(cluster => {
           const [longitude, latitude] = cluster.geometry.coordinates;
-          const subpop = cluster.subpop
+          const subpop = cluster.subpop;
           const {
             cluster: isCluster,
-            point_count: pointCount
+            point_count: pointCount,
+            //target_count: targetCount
           } = cluster.properties;
+          const diameter = Math.sqrt(pointCount) / Math.sqrt(points.length)
+          //const diameter2 = Math.sqrt(targetCount) / Math.sqrt(pointCount) * diameter
 
           if (isCluster) {
             return (
@@ -120,8 +132,8 @@ export default function App() {
                 <div
                   className="cluster-marker"
                   style={{
-                    width: `${20 + Math.sqrt(pointCount) / Math.sqrt(points.length) * 100}px`,
-                    height: `${20 + Math.sqrt(pointCount) / Math.sqrt(points.length) * 100}px`
+                    width: `${20 + diameter * 100}px`,
+                    height: `${20 + diameter * 100}px`
                   }}
                   onClick={() => {
                     const expansionZoom = Math.min(
@@ -141,9 +153,10 @@ export default function App() {
                     });
                   }}
                 >
-                  {pointCount}
+                    {pointCount}    
                 </div>
-              </Marker>
+             </Marker>
+
             );
           }
 
