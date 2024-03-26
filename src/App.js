@@ -92,14 +92,14 @@ export default function App() {
     options: { 
         radius: 75, 
         maxZoom: 14, 
+        
+        //use map/reduce functionality to compute
+        //the number of targeted customers in each cluster
         map: props => ({
             target_count: props.subpop ? 1 : 0,
-            //target_count: 0,
-            //count: 1,
             }),
         reduce: (acc,props) => {
             acc.target_count += props.target_count;
-            //acc.count += 1;
             }
     }
   });
@@ -115,14 +115,20 @@ export default function App() {
         }}
         ref={mapRef}
       >
-        {clusters.map(cluster => {
+        {//Add icons for each cluster.
+         clusters.map(cluster => {
           const [longitude, latitude] = cluster.geometry.coordinates;
           const subpop = cluster.properties.subpop;
           const {
             cluster: isCluster,
             point_count: pointCount,
           } = cluster.properties;
-          //const diameter = 20 + Math.sqrt(pointCount) / Math.sqrt(points.length) * 100
+
+          //Scale the diameter as the 1/5th power of the number of
+          //points in the cluster, with a minimum size of 20px. 
+          //This is a weird scaling, but it ensures that the
+          //icon sizes for huge clusters don't get ridiculous, while
+          //also making sure clusters of size 2 are visible. 
           const diameter = 20*(pointCount/2)**(1/5)
 
           if (isCluster) {
@@ -167,8 +173,8 @@ export default function App() {
           }
 
           return (
+            //Add icons for individual sites
             <Marker
-
               latitude={latitude}
               longitude={longitude}
             >
@@ -179,16 +185,15 @@ export default function App() {
                   height:`${7}px`
                 }}
               >
-              {//<button className="crime-marker">
-                //<img src="/custody.svg" alt="crime doesn't pay" />
-              //</button>
-            }
+              {}
             </div>
             </Marker>
           );
         })};
 
-    {clusters.map(cluster => {
+   
+    {//Add icons for the targeted population
+    clusters.map(cluster => {
           const [longitude, latitude] = cluster.geometry.coordinates;
           const subpop = cluster.subpop;
           const {
@@ -196,8 +201,9 @@ export default function App() {
             point_count: pointCount,
             target_count: targetCount
           } = cluster.properties;
-          //const targetCount = cluster.target_count
-          //const diameter = Math.sqrt(targetCount)/Math.sqrt(pointCount) * 20 + Math.sqrt(targetCount) / Math.sqrt(points.length) * 100
+          
+          //scale the targeted-population icon so that the area is proportional to the
+          //fraction of the total cluster that has been targeted
           const diameter = 20*(pointCount/2)**(1/5)*(targetCount/pointCount)**(1/2)
           if (isCluster) {
             return (
