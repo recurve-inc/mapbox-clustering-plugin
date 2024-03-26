@@ -92,7 +92,8 @@ export default function App() {
         radius: 75, 
         maxZoom: 14, 
     map: props => ({
-        subpop: props.subpop
+        subpop: points.subpop,
+        target_count: 0
         }),
     reduce: (acc,props) => {
         acc.target_count += props.subpop ? 1 : 0;   
@@ -117,10 +118,9 @@ export default function App() {
           const {
             cluster: isCluster,
             point_count: pointCount,
-            //target_count: targetCount
           } = cluster.properties;
           const diameter = Math.sqrt(pointCount) / Math.sqrt(points.length)
-          const diameter2 = Math.sqrt(targetCount) / Math.sqrt(pointCount) * diameter
+          
 
           if (isCluster) {
             return (
@@ -161,6 +161,8 @@ export default function App() {
             );
           }
 
+          
+
           return (
             <Marker
             //add some random jitter so colocated meters can be distinguished
@@ -185,6 +187,57 @@ export default function App() {
             </div>
             </Marker>
           );
+        })};
+
+    {clusters.map(cluster => {
+          const [longitude, latitude] = cluster.geometry.coordinates;
+          const subpop = cluster.subpop;
+          const {
+            cluster: isCluster,
+            point_count: pointCount,
+            target_count: targetCount
+          } = cluster.properties;
+          const diameter = Math.sqrt(pointCount) / Math.sqrt(points.length)
+          const diameter2 = Math.sqrt(targetCount) / Math.sqrt(pointCount) * diameter
+
+          if (isCluster) {
+            return (
+              <Marker
+                key={`cluster-${cluster.id}`}
+                latitude={latitude}
+                longitude={longitude}
+              >
+                <div
+                  className="target-cluster-marker"
+                  style={{
+                    width: `${diameter2 * 100}px`,
+                    height: `${diameter2 * 100}px`
+                  }}
+                  onClick={() => {
+                    const expansionZoom = Math.min(
+                      supercluster.getClusterExpansionZoom(cluster.id),
+                      50
+                    );
+
+                    setViewport({
+                      ...viewport,
+                      latitude,
+                      longitude,
+                      zoom: expansionZoom,
+                      transitionInterpolator: new FlyToInterpolator({
+                        speed: 2
+                      }),
+                      transitionDuration: "auto"
+                    });
+                  }}
+                >
+                    {targetCount}    
+                </div>
+                
+             </Marker>
+
+            );
+          }
         })}
       </ReactMapGL>
     </div>
