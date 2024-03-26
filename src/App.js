@@ -68,12 +68,13 @@ export default function App() {
 
   const points = sites.map(site => ({
     type: "Feature",
-    properties: { cluster: false},
+    properties: { 
+        cluster: false,
+        subpop: site.subpop},
     geometry: {
       type: "Point",
       coordinates: site.coordinates,
     },
-    subpop: site.subpop
   }));
 
   const bounds = mapRef.current
@@ -91,13 +92,15 @@ export default function App() {
     options: { 
         radius: 75, 
         maxZoom: 14, 
-    map: props => ({
-        subpop: points.subpop,
-        target_count: 0
-        }),
-    reduce: (acc,props) => {
-        acc.target_count += props.subpop ? 1 : 0;   
-        }
+        map: props => ({
+            target_count: props.subpop ? 1 : 0,
+            //target_count: 0,
+            //count: 1,
+            }),
+        reduce: (acc,props) => {
+            acc.target_count += props.target_count;
+            //acc.count += 1;
+            }
     }
   });
 
@@ -114,12 +117,12 @@ export default function App() {
       >
         {clusters.map(cluster => {
           const [longitude, latitude] = cluster.geometry.coordinates;
-          const subpop = cluster.subpop;
+          const subpop = cluster.properties.subpop;
           const {
             cluster: isCluster,
             point_count: pointCount,
           } = cluster.properties;
-          const diameter = Math.sqrt(pointCount) / Math.sqrt(points.length)
+          const diameter = 20 + Math.sqrt(pointCount) / Math.sqrt(points.length) * 100
           
 
           if (isCluster) {
@@ -132,8 +135,10 @@ export default function App() {
                 <div
                   className="cluster-marker"
                   style={{
-                    width: `${20 + diameter * 100}px`,
-                    height: `${20 + diameter * 100}px`
+                    width: `${diameter}px`,
+                    height: `${diameter}px`,
+                    marginLeft: `-${diameter/2}px`,
+                    marginTop: `-${diameter/2}px`
                   }}
                   onClick={() => {
                     const expansionZoom = Math.min(
@@ -161,17 +166,11 @@ export default function App() {
             );
           }
 
-          
-
           return (
             <Marker
-            //add some random jitter so colocated meters can be distinguished
-            //not great, because it regenerates the number on each render, so
-            //the points move around. 
-            //TBD: use a different random number generator that can be 
-            //given a seed.
-              latitude={latitude + (Math.random()-0.5)*0.00005}
-              longitude={longitude + (Math.random()-0.5)*0.00005}
+
+              latitude={latitude}
+              longitude={longitude}
             >
              <div
                 className={subpop ? "target-site-marker" : "site-marker"}
@@ -197,8 +196,8 @@ export default function App() {
             point_count: pointCount,
             target_count: targetCount
           } = cluster.properties;
-          const diameter = Math.sqrt(pointCount) / Math.sqrt(points.length)
-          const diameter2 = Math.sqrt(targetCount) / Math.sqrt(pointCount) * diameter
+          //const targetCount = cluster.target_count
+          const diameter = Math.sqrt(targetCount)/Math.sqrt(pointCount) * 20 + Math.sqrt(targetCount) / Math.sqrt(points.length) * 100
 
           if (isCluster) {
             return (
@@ -210,8 +209,10 @@ export default function App() {
                 <div
                   className="target-cluster-marker"
                   style={{
-                    width: `${diameter2 * 100}px`,
-                    height: `${diameter2 * 100}px`
+                    width: diameter ? `${diameter}px` : 0,
+                    height: diameter? `${diameter}px` : 0,
+                    marginLeft: `-${diameter/2}px`,
+                    marginTop: `-${diameter/2}px`
                   }}
                   onClick={() => {
                     const expansionZoom = Math.min(
@@ -231,7 +232,7 @@ export default function App() {
                     });
                   }}
                 >
-                    {targetCount}    
+                    {pointCount}    
                 </div>
                 
              </Marker>
