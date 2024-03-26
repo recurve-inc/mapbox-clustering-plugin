@@ -1,11 +1,10 @@
 import React, { useState, useRef } from "react";
-//import useSwr from "swr";
-import ReactMapGL, { Marker, FlyToInterpolator, Popup } from "react-map-gl";
+import ReactMapGL, { Marker, Popup } from "react-map-gl";
 import useSupercluster from "use-supercluster";
 import {
     client,
     useConfig,
-    //useElementColumns,
+    useElementColumns,
     useElementData,
   } from "@sigmacomputing/plugin";
 import "./App.css";
@@ -17,13 +16,13 @@ client.config.configureEditorPanel([
     { name: "Latitude", type: "column", source: "source", allowMultiple: false, allowedTypes: ['number', 'integer'] },
     { name: "Longitude", type: "column", source: "source", allowMultiple: false, allowedTypes: ['number', 'integer'] },
     { name: "Subpopulation", type: "column", source: "source", allowMultiple: false, allowedTypes: ['integer','boolean'] },
-    { name: "Cluster scale", type: "text", placeholder: 'Number from 1 to 100' },
+    { name: "Site_Details_Fields", type:"column", source:"source", allowMultiple:true }, //for creating site-level popup information in the future. I was unable to figure this out.
   ]);
 
 export default function App() {
 
   const config = useConfig();
-  //const columns = useElementColumns(config.source);
+  const columns = useElementColumns(config.source);
   const sigmaData = useElementData(config.source);
 
   
@@ -31,6 +30,7 @@ export default function App() {
     const latitude = config.Latitude;
     const longitude = config.Longitude;
     const subpopulation = config.Subpopulation;
+    //const pup_fields = config.Site_Details_Fields
     // console.log('got data', config, sigmaData, columns, latitude, longitude, fields);
     const _data = [];
     if (sigmaData?.[latitude] && sigmaData?.[longitude]) {
@@ -38,7 +38,7 @@ export default function App() {
           const lat = sigmaData[latitude][i];
           const long = sigmaData[longitude][i];
           const spop = sigmaData[subpopulation][i];
-          //const tooltips = fields.map(id => {
+          //const popup_fields = pup_fields.map(id => {
           //  return {
           //    key: columns[id]?.name || '',
           //    value: sigmaData[id] ? sigmaData[id][i] : '',
@@ -48,12 +48,13 @@ export default function App() {
             id: i,
             coordinates: [long, lat],
             subpop: spop
+            //popup_fields: popup_fields
           })
         }
     }
     return _data
   }, 
-  [config.Latitude, config.Longitude, config.Subpopulation, sigmaData]);
+  [columns, config.Latitude, config.Longitude, config.Subpopulation, config.SiteDetailsFields, sigmaData]);
 
   //TODO: make the sizing below dynamic
   const [viewport, setViewport] = useState({
@@ -75,7 +76,9 @@ export default function App() {
     type: "Feature",
     properties: { 
         cluster: false,
-        subpop: site.subpop},
+        subpop: site.subpop,
+        //popup_fields: site.popup_fields
+    },
     geometry: {
       type: "Point",
       coordinates: site.coordinates,
@@ -97,7 +100,6 @@ export default function App() {
     options: { 
         radius: 75, 
         maxZoom: 14, 
-
         //use map/reduce functionality to compute
         //the number of targeted customers in each cluster
         map: props => ({
@@ -137,6 +139,7 @@ export default function App() {
           //also making sure clusters of size 2 are visible. 
           const diameter = 20*(pointCount/2)**(1/5)
 
+
           if (isCluster) {
             return (
               <Marker
@@ -152,23 +155,6 @@ export default function App() {
                     marginLeft: `-${diameter/2}px`,
                     marginTop: `-${diameter/2}px`
                   }}
-                  onClick={() => {
-                    const expansionZoom = Math.min(
-                      supercluster.getClusterExpansionZoom(cluster.id),
-                      50
-                    );
-
-                    setViewport({
-                      ...viewport,
-                      latitude,
-                      longitude,
-                      zoom: expansionZoom,
-                      transitionInterpolator: new FlyToInterpolator({
-                        speed: 2
-                      }),
-                      transitionDuration: "auto"
-                    });
-                  }}
                 >
                     {pointCount}    
                 </div>
@@ -179,10 +165,12 @@ export default function App() {
           }
 
           return (
+
             //Add icons for individual sites
             <Marker
               latitude={latitude}
               longitude={longitude}
+              onClick={()=>setShowPopup(cluster)}
             >
              <div
                 className={subpop ? "target-site-marker" : "site-marker"}
@@ -194,6 +182,7 @@ export default function App() {
               {}
             </div>
             </Marker>
+
           );
         })};
 
@@ -229,11 +218,9 @@ export default function App() {
 
                 >
                     {pointCount}    
-                </div>
-                
-             
+                </div>           
               </Marker> 
-            {showPopup && showPopup.id === cluster.id && (
+              {showPopup && showPopup.id === cluster.id && (
                 <Popup
                 key={`cluster-${cluster.id}`}
                 latitude={latitude}
@@ -244,12 +231,12 @@ export default function App() {
                 closeOnClick={true}
                 offsetLeft={0}
                 >
-                <span style={{fontSize: "1vw", fontFamily: "Poppins"}}>
+                <span style={{fontSize: "1.2vw", fontFamily: "Poppins"}}>
                     <div>{pointCount} Sites</div>
                     <div>{targetCount} Targeted</div>
                 </span>
                 </Popup>
-            )}
+               )}
             </div>
             );
           }
