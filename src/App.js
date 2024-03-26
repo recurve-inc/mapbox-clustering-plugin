@@ -231,7 +231,7 @@ export default function App() {
                 closeOnClick={true}
                 offsetLeft={0}
                 >
-                <span style={{fontSize: "1.2vw", fontFamily: "Poppins"}}>
+                <span style={{fontSize: "1.5vw", fontFamily: "Poppins"}}>
                     <div>{pointCount} Sites</div>
                     <div>{targetCount} Targeted</div>
                 </span>
