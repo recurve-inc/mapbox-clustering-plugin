@@ -1,6 +1,6 @@
 .cluster-marker {
   color: #fff;
-  background: #6d6e6e;
+  background: #BFBFBF;
   border-radius: 50%;
   padding: 0px;
   display: flex;
@@ -10,7 +10,7 @@
 
 .target-cluster-marker {
     color: #fff;
-    background: #02cc3e;
+    background: #f6b24b;
     border-radius: 50%;
     padding: 0px;
     display: flex;
@@ -20,7 +20,7 @@
 
 .site-marker {
     color: #fff;
-    background: #6d6e6e;
+    background: #BFBFBF;
     border-radius: 0%;
     padding: 0px;
     display: flex;
@@ -30,7 +30,7 @@
 
 .target-site-marker {
     color: #fff;
-    background: #02cc3e;
+    background: #f6b24b;
     border-radius: 0%;
     padding: 0px;
     display: flex;
