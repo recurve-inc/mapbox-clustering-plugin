@@ -1,6 +1,6 @@
 import React, { useState, useRef } from "react";
 //import useSwr from "swr";
-import ReactMapGL, { Marker, FlyToInterpolator } from "react-map-gl";
+import ReactMapGL, { Marker, FlyToInterpolator, Popup } from "react-map-gl";
 import useSupercluster from "use-supercluster";
 import {
     client,
@@ -25,6 +25,7 @@ export default function App() {
   const config = useConfig();
   //const columns = useElementColumns(config.source);
   const sigmaData = useElementData(config.source);
+
   
   const data = React.useMemo(() => {
     const latitude = config.Latitude;
@@ -62,6 +63,10 @@ export default function App() {
     height: "100vh",
     zoom: 8
   });
+
+  // state
+  const [showPopup, setShowPopup] = useState(null);
+  
   const mapRef = useRef();
 
   const sites = data ? data : [];
@@ -92,7 +97,7 @@ export default function App() {
     options: { 
         radius: 75, 
         maxZoom: 14, 
-        
+
         //use map/reduce functionality to compute
         //the number of targeted customers in each cluster
         map: props => ({
@@ -103,6 +108,7 @@ export default function App() {
             }
     }
   });
+
 
   return (
     <div>
@@ -195,7 +201,6 @@ export default function App() {
     {//Add icons for the targeted population
     clusters.map(cluster => {
           const [longitude, latitude] = cluster.geometry.coordinates;
-          const subpop = cluster.subpop;
           const {
             cluster: isCluster,
             point_count: pointCount,
@@ -207,10 +212,11 @@ export default function App() {
           const diameter = 20*(pointCount/2)**(1/5)*(targetCount/pointCount)**(1/2)
           if (isCluster) {
             return (
+                <div key={`cluster-${cluster.id}`}>
               <Marker
-                key={`cluster-${cluster.id}`}
                 latitude={latitude}
                 longitude={longitude}
+                onClick={()=>setShowPopup(cluster)}
               >
                 <div
                   className="target-cluster-marker"
@@ -220,29 +226,31 @@ export default function App() {
                     marginLeft: `-${diameter/2}px`,
                     marginTop: `-${diameter/2}px`
                   }}
-                  onClick={() => {
-                    const expansionZoom = Math.min(
-                      supercluster.getClusterExpansionZoom(cluster.id),
-                      50
-                    );
 
-                    setViewport({
-                      ...viewport,
-                      latitude,
-                      longitude,
-                      zoom: expansionZoom,
-                      transitionInterpolator: new FlyToInterpolator({
-                        speed: 2
-                      }),
-                      transitionDuration: "auto"
-                    });
-                  }}
                 >
                     {pointCount}    
                 </div>
                 
-             </Marker>
-
+             
+              </Marker> 
+            {showPopup && showPopup.id === cluster.id && (
+                <Popup
+                key={`cluster-${cluster.id}`}
+                latitude={latitude}
+                longitude={longitude}
+                anchor = "bottom"
+                onClose={() => setShowPopup(null)}
+                closeButton={true}
+                closeOnClick={true}
+                offsetLeft={0}
+                >
+                <span style={{fontSize: "1vw", fontFamily: "Poppins"}}>
+                    <div>{pointCount} Sites</div>
+                    <div>{targetCount} Targeted</div>
+                </span>
+                </Popup>
+            )}
+            </div>
             );
           }
         })}
