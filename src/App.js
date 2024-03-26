@@ -122,8 +122,8 @@ export default function App() {
             cluster: isCluster,
             point_count: pointCount,
           } = cluster.properties;
-          const diameter = 20 + Math.sqrt(pointCount) / Math.sqrt(points.length) * 100
-          
+          //const diameter = 20 + Math.sqrt(pointCount) / Math.sqrt(points.length) * 100
+          const diameter = 20*(pointCount/2)**(1/5)
 
           if (isCluster) {
             return (
@@ -197,8 +197,8 @@ export default function App() {
             target_count: targetCount
           } = cluster.properties;
           //const targetCount = cluster.target_count
-          const diameter = Math.sqrt(targetCount)/Math.sqrt(pointCount) * 20 + Math.sqrt(targetCount) / Math.sqrt(points.length) * 100
-
+          //const diameter = Math.sqrt(targetCount)/Math.sqrt(pointCount) * 20 + Math.sqrt(targetCount) / Math.sqrt(points.length) * 100
+          const diameter = 20*(pointCount/2)**(1/5)*(targetCount/pointCount)**(1/2)
           if (isCluster) {
             return (
               <Marker
