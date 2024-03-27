@@ -175,8 +175,8 @@ export default function App() {
              <div
                 className={subpop ? "target-site-marker" : "site-marker"}
                 style={{
-                  width:`${7}px`, 
-                  height:`${7}px`
+                  width:`${8}px`, 
+                  height:`${8}px`
                 }}
               >
               {}
@@ -231,7 +231,7 @@ export default function App() {
                 closeOnClick={true}
                 offsetLeft={0}
                 >
-                <span style={{fontSize: "1.5vw", fontFamily: "Poppins"}}>
+                <span style={{fontSize: "14px", fontFamily: "Tahoma"}}>
                     <div>{pointCount} Sites</div>
                     <div>{targetCount} Targeted</div>
                 </span>
