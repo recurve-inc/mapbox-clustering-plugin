@@ -2,12 +2,20 @@
 
 Forked by Brian Gerke from https://github.com/leighhalliday/mapbox-clustering with additional features pulled from the Sigma example plugin repo (https://github.com/sigmacomputing/plugin)
 
-To run the code locally it is necessary to create an `.env.local` file that looks like
+### To run the code on your VM:
+
+First, create an `.env.local` file that looks like
 ```
 REACT_APP_MAPBOX_TOKEN = xxxxxxx
 ``` 
 with xxxxxx corresponding to a Mapbox.com API token.  In production, there should be some other `.env.*`
 file (I am not familiar with the proper idiom here).
+
+Next, forward port 3000 to your local machine (this is easy to do in VSCode)
+
+Finally, navigate to the base directory of this repo and do `yarn install` followed by `yarn && yarn run`.  (You may have to install yarn)
+
+### Next steps
 
 Necessary next steps to use in deployed dashboards:
 * Modify the code to automatically center the initial view on the data (it is currently hard coded to center on Los Angeles)
@@ -21,4 +29,5 @@ Nice-to-haves:
 * Make the point colors configurable in Sigma (currently hard coded in CSS)
 * Add a popup for individual sites that displays data from the Site_Details_Fields
 * Let the max zoom level be configurable in Sigma
+* Modify fonts to use Maven Pro
 
