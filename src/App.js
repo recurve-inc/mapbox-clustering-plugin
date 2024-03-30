@@ -31,7 +31,7 @@ export default function App() {
     const longitude = config.Longitude;
     const subpopulation = config.Subpopulation;
     //const pup_fields = config.Site_Details_Fields
-    // console.log('got data', config, sigmaData, columns, latitude, longitude, fields);
+
     const _data = [];
     if (sigmaData?.[latitude] && sigmaData?.[longitude]) {
         for (let i = 0; i < sigmaData[latitude].length; i++) {
@@ -56,6 +56,21 @@ export default function App() {
   }, 
   [columns, config.Latitude, config.Longitude, config.Subpopulation, config.SiteDetailsFields, sigmaData]);
 
+//  const avgcoords = React.useMemo(()=>{
+//    const latitude = config.Latitude;
+//    const longitude = config.Longitude;
+//    var avglat = 0.
+//    var avglon = 0.
+//    if (sigmaData?.[latitude] && sigmaData?.[longitude]) {
+//        for (let i=0; i< sigmaData[latitude].length; i++){
+//            avglat = avglat + sigmaData[latitude][i]/sigmaData[latitude].length
+//            avglon = avglon + sigmaData[longitude][i]/sigmaData[longitude].length
+//        }}   
+//    console.log(sigmaData[latitude][1]/sigmaData[latitude].length)
+//    return [avglat, avglon]
+//  })
+
+ // console.log(avgcoords)
   //TODO: make the sizing below dynamic
   const [viewport, setViewport] = useState({
     latitude: 34.0549,
