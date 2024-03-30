@@ -59,18 +59,21 @@ export default function App() {
 //  const avgcoords = React.useMemo(()=>{
 //    const latitude = config.Latitude;
 //    const longitude = config.Longitude;
-//    var avglat = 0.
-//    var avglon = 0.
+//    var avglat = 0.;
+//    var avglon = 0.;
 //    if (sigmaData?.[latitude] && sigmaData?.[longitude]) {
 //        for (let i=0; i< sigmaData[latitude].length; i++){
-//            avglat = avglat + sigmaData[latitude][i]/sigmaData[latitude].length
-//            avglon = avglon + sigmaData[longitude][i]/sigmaData[longitude].length
-//        }}   
-//    console.log(sigmaData[latitude][1]/sigmaData[latitude].length)
-//    return [avglat, avglon]
-//  })
+//            avglat = avglat + sigmaData[latitude][i]/sigmaData[latitude].length;
+//            avglon = avglon + sigmaData[longitude][i]/sigmaData[longitude].length;
+ //       }}   
+    //console.log(sigmaData[latitude][0]/sigmaData[latitude].length);
+ //   return [avglat, avglon]
+  //}, 
+  //[config.Latitude, config.Longitude, sigmaData]);
 
- // console.log(avgcoords)
+  //console.log(avgcoords)
+
+  
   //TODO: make the sizing below dynamic
   const [viewport, setViewport] = useState({
     latitude: 34.0549,
